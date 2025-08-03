@@ -1,0 +1,4 @@
+com\example\StudentThymeleafCrudExample\Controller\StudentController.class
+com\example\StudentThymeleafCrudExample\StudentThymeleafCrudExampleApplication.class
+com\example\StudentThymeleafCrudExample\Entity\Student.class
+com\example\StudentThymeleafCrudExample\Repository\StudentRepository.class

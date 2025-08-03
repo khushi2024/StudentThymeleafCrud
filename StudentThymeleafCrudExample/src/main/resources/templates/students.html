@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Student List</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container mt-4" style="max-width: 900px;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Students Details</h2>
+    <a href="/students/new" class="btn btn-success">
+      <i class="fa fa-plus"></i> Add Student
+    </a>
+  </div>
+
+  <!-- Success Message -->
+  <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center" role="alert">
+    [[${message}]]
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Search Form -->
+  <form th:action="@{/students/keyword}" method="get">
+    <div class="row mb-3">
+      <div class="col-md-9">
+        <input id="keyword" type="search" name="keyword" th:value="${keyword}" class="form-control" placeholder="Search by keyword" required />
+      </div>
+      <div class="col-md-3 d-flex">
+        <button type="submit" class="btn btn-secondary me-2">Search</button>
+        <button id="btnClear" class="btn btn-info">Clear</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Student Table -->
+  <div th:if="${studentList.size() > 0}">
+    <table class="table table-hover table-bordered">
+      <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>City</th>
+        <th>Marks</th>
+        <th>Result</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="student : ${studentList}">
+        <td>[[${student.id}]]</td>
+        <td>[[${student.name}]]</td>
+        <td>[[${student.city}]]</td>
+        <td>[[${student.marks}]]</td>
+        <td>
+          <a th:if="${student.result}" class="fa-regular fa-square-check"
+             th:href="@{'/students/' + ${student.id} + '/result/false'}" title="Disable Result"></a>
+          <a th:if="${!student.result}" class="fa-regular fa-square icon-dark"
+             th:href="@{'/students/' + ${student.id} + '/result/true'}" title="Enable Result"></a>
+        </td>
+        <td>
+          <a th:href="@{'/students/' + ${student.id}}" class="fa-regular fa-pen-to-square text-primary me-2" title="Edit"></a>
+          <a th:href="@{'/students/delete/' + ${student.id}}" th:studentName="${student.name}" class="fa-regular fa-trash-can text-danger btn-delete" title="Delete"></a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div th:unless="${studentList.size() > 0}" class="alert alert-warning">No student found.</div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmText"></p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <a href="#" id="yesBtn" class="btn btn-danger">Yes</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<!-- JavaScript for Delete Modal -->
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".btn-delete").on("click", function (e) {
+      e.preventDefault();
+      const link = $(this);
+      const studentName = link.attr("studentName");
+      $("#yesBtn").attr("href", link.attr("href"));
+      $("#confirmText").html("Do you want to delete the student <strong>" + studentName + "</strong>?");
+      $("#confirmModal").modal("show");
+    });
+
+    $("#btnClear").on("click", function (e) {
+      e.preventDefault();
+      window.location = "[[@{/students/all}]]";
+    });
+  });
+</script>
+</body>
+</html>
